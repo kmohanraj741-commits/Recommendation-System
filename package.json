@@ -1,0 +1,8 @@
+{
+  "name": "recommendation-system",
+  "version": "1.0.0",
+  "description": "Recommendation System academic project",
+  "main": "server.js",
+  "scripts": {"start": "node server.js", "check": "node --check server.js"},
+  "dependencies": {"express": "^4.21.2"}
+}
