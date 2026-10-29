@@ -1,27 +1,108 @@
-
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Recommendation System — v1</title>
-  <link rel="stylesheet" href="/style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Recommendation System — v2</title>
+
+    <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
-  <main class="container">
-    <header>
-      <p class="eyebrow">ACADEMIC PROJECT · VERSION 1</p>
-      <h1>Recommendation System</h1>
-      <p class="subtitle">Discover useful products from a simple recommendation list.</p>
-    </header>
-    <section class="panel">
-      <div class="section-heading"><h2>Recommended items</h2><span id="count" class="badge">Loading…</span></div>
-      <p class="note">Version 1 requirement: Show List — display recommendation items.</p>
-      <div id="products" class="products" aria-live="polite"></div>
-      <p id="error" class="error" role="alert"></p>
-    </section>
-    <footer>Recommendation System · v1</footer>
-  </main>
-  <script src="/script.js"></script>
+    <main class="container">
+
+        <header>
+            <p class="eyebrow">ACADEMIC PROJECT · VERSION 2</p>
+
+            <h1>Recommendation System</h1>
+
+            <p class="subtitle">
+                Discover useful products and filter recommendations by category and price.
+            </p>
+        </header>
+
+        <section class="panel">
+
+            <div class="section-heading">
+                <h2>Recommended items</h2>
+
+                <span id="count" class="badge">
+                    Loading…
+                </span>
+            </div>
+
+            <p class="note">
+                Version 2 requirement: Filter — filter recommendation items by category and price.
+            </p>
+
+            <div class="filters">
+
+                <div class="filter-group">
+                    <label for="category">Category</label>
+
+                    <select id="category">
+                        <option value="">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Home">Home</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="minPrice">Minimum Price</label>
+
+                    <input
+                        type="number"
+                        id="minPrice"
+                        placeholder="Example: 1000"
+                        min="0"
+                    >
+                </div>
+
+                <div class="filter-group">
+                    <label for="maxPrice">Maximum Price</label>
+
+                    <input
+                        type="number"
+                        id="maxPrice"
+                        placeholder="Example: 5000"
+                        min="0"
+                    >
+                </div>
+
+                <div class="filter-actions">
+                    <button id="filterButton">
+                        Apply Filter
+                    </button>
+
+                    <button id="clearButton" type="button">
+                        Clear
+                    </button>
+                </div>
+
+            </div>
+
+            <div
+                id="products"
+                class="products"
+                aria-live="polite"
+            ></div>
+
+            <p
+                id="error"
+                class="error"
+                role="alert"
+            ></p>
+
+        </section>
+
+        <footer>
+            Recommendation System · v2
+        </footer>
+
+    </main>
+
+    <script src="/script.js"></script>
 </body>
 </html>
