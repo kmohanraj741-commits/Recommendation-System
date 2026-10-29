@@ -3,7 +3,7 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const VERSION = process.env.APP_VERSION || "v2";
+const VERSION = process.env.APP_VERSION || "v3";
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -63,23 +63,58 @@ app.get("/health", (_req, res) => {
 app.get("/api/recommendations", (req, res) => {
     let results = [...recommendations];
 
-    const { category, minPrice, maxPrice } = req.query;
+    const {
+        category,
+        minPrice,
+        maxPrice,
+        sort
+    } = req.query;
 
+    // Filter by category
     if (category) {
         results = results.filter(
-            item => item.category.toLowerCase() === category.toLowerCase()
+            item =>
+                item.category.toLowerCase() ===
+                category.toLowerCase()
         );
     }
 
+    // Filter by minimum price
     if (minPrice !== undefined) {
         results = results.filter(
             item => item.price >= Number(minPrice)
         );
     }
 
+    // Filter by maximum price
     if (maxPrice !== undefined) {
         results = results.filter(
             item => item.price <= Number(maxPrice)
+        );
+    }
+
+    // Sort results
+    if (sort === "score-desc") {
+        results.sort(
+            (a, b) => b.score - a.score
+        );
+    }
+
+    if (sort === "score-asc") {
+        results.sort(
+            (a, b) => a.score - b.score
+        );
+    }
+
+    if (sort === "price-asc") {
+        results.sort(
+            (a, b) => a.price - b.price
+        );
+    }
+
+    if (sort === "price-desc") {
+        results.sort(
+            (a, b) => b.price - a.price
         );
     }
 
@@ -92,7 +127,8 @@ app.get("/api/recommendations", (req, res) => {
 
 app.get("/api/recommendations/:id", (req, res) => {
     const item = recommendations.find(
-        product => product.id === Number(req.params.id)
+        product =>
+            product.id === Number(req.params.id)
     );
 
     if (!item) {

@@ -1,56 +1,98 @@
+```html
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
-    <title>Recommendation System — v2</title>
+    <title>Recommendation System — v3</title>
 
-    <link rel="stylesheet" href="/style.css">
+    <link
+        rel="stylesheet"
+        href="/style.css"
+    >
 </head>
 
 <body>
+
     <main class="container">
 
         <header>
-            <p class="eyebrow">ACADEMIC PROJECT · VERSION 2</p>
+            <p class="eyebrow">
+                ACADEMIC PROJECT · VERSION 3
+            </p>
 
-            <h1>Recommendation System</h1>
+            <h1>
+                Recommendation System
+            </h1>
 
             <p class="subtitle">
-                Discover useful products and filter recommendations by category and price.
+                Discover useful products, filter them,
+                and sort recommendations.
             </p>
         </header>
 
         <section class="panel">
 
             <div class="section-heading">
-                <h2>Recommended items</h2>
 
-                <span id="count" class="badge">
+                <h2>
+                    Recommended items
+                </h2>
+
+                <span
+                    id="count"
+                    class="badge"
+                >
                     Loading…
                 </span>
+
             </div>
 
             <p class="note">
-                Version 2 requirement: Filter — filter recommendation items by category and price.
+                Version 3 requirement:
+                Filter and Sort recommendation items.
             </p>
 
             <div class="filters">
 
                 <div class="filter-group">
-                    <label for="category">Category</label>
+
+                    <label for="category">
+                        Category
+                    </label>
 
                     <select id="category">
-                        <option value="">All Categories</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="Home">Home</option>
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        <option value="Electronics">
+                            Electronics
+                        </option>
+
+                        <option value="Fashion">
+                            Fashion
+                        </option>
+
+                        <option value="Home">
+                            Home
+                        </option>
+
                     </select>
+
                 </div>
 
                 <div class="filter-group">
-                    <label for="minPrice">Minimum Price</label>
+
+                    <label for="minPrice">
+                        Minimum Price
+                    </label>
 
                     <input
                         type="number"
@@ -58,10 +100,14 @@
                         placeholder="Example: 1000"
                         min="0"
                     >
+
                 </div>
 
                 <div class="filter-group">
-                    <label for="maxPrice">Maximum Price</label>
+
+                    <label for="maxPrice">
+                        Maximum Price
+                    </label>
 
                     <input
                         type="number"
@@ -69,16 +115,57 @@
                         placeholder="Example: 5000"
                         min="0"
                     >
+
+                </div>
+
+                <div class="filter-group">
+
+                    <label for="sort">
+                        Sort By
+                    </label>
+
+                    <select id="sort">
+
+                        <option value="">
+                            Default Order
+                        </option>
+
+                        <option value="score-desc">
+                            Recommendation Score: High to Low
+                        </option>
+
+                        <option value="score-asc">
+                            Recommendation Score: Low to High
+                        </option>
+
+                        <option value="price-asc">
+                            Price: Low to High
+                        </option>
+
+                        <option value="price-desc">
+                            Price: High to Low
+                        </option>
+
+                    </select>
+
                 </div>
 
                 <div class="filter-actions">
-                    <button id="filterButton">
+
+                    <button
+                        id="filterButton"
+                        type="button"
+                    >
                         Apply Filter
                     </button>
 
-                    <button id="clearButton" type="button">
+                    <button
+                        id="clearButton"
+                        type="button"
+                    >
                         Clear
                     </button>
+
                 </div>
 
             </div>
@@ -98,11 +185,14 @@
         </section>
 
         <footer>
-            Recommendation System · v2
+            Recommendation System · v3
         </footer>
 
     </main>
 
     <script src="/script.js"></script>
+
 </body>
+
 </html>
+```
