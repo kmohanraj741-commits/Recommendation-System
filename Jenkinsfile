@@ -1,60 +1,108 @@
 pipeline {
     agent any
+
     environment {
-        IMAGE = 'YOUR_DOCKERHUB_USERNAME/recommendation-system:v1'
-        // Update these paths to the actual docker.exe and kubectl.exe paths on your PC.
-        DOCKER = 'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe'
-        KUBECTL = 'C:\\Program Files\\Docker\\Docker\\resources\\bin\\kubectl.exe'
+        DOCKER_IMAGE = "mohanraj741/recommendation-system"
+        DOCKER_CREDENTIALS = "dockerhub-creds"
     }
+
     stages {
-        stage('Checkout Verification') {
-            steps { bat 'git log -1 --oneline' }
-        }
-        stage('Validate Application') {
-            steps { bat 'node --check server.js' }
-        }
-        stage('Docker Build') {
-            steps { bat '"%DOCKER%" build -t %IMAGE% .' }
-        }
-        stage('DockerHub Push') {
+
+        stage("Checkout") {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-recommendation',
-                    usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_TOKEN')]) {
-                    bat '''
-                        @echo off
-                        setlocal
-                        set "DOCKER_CONFIG=%WORKSPACE%\\docker-auth"
-                        if not exist "%DOCKER_CONFIG%" mkdir "%DOCKER_CONFIG%"
-                        echo %DOCKER_TOKEN%| "%DOCKER%" login --username "%DOCKER_USER%" --password-stdin
-                        if errorlevel 1 exit /b 1
-                        "%DOCKER%" push "%IMAGE%"
-                        if errorlevel 1 exit /b 1
-                        "%DOCKER%" logout
+                checkout scm
+            }
+        }
+
+        stage("Detect Version") {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == "v1") {
+                        env.VERSION = "v1"
+                        env.HOST_PORT = "3001"
+                    } else if (env.BRANCH_NAME == "v2") {
+                        env.VERSION = "v2"
+                        env.HOST_PORT = "3002"
+                    } else if (env.BRANCH_NAME == "v3") {
+                        env.VERSION = "v3"
+                        env.HOST_PORT = "3003"
+                    } else {
+                        error("Unsupported branch: ${env.BRANCH_NAME}")
+                    }
+
+                    env.IMAGE_TAG = "${DOCKER_IMAGE}:${env.VERSION}"
+
+                    echo "Version: ${env.VERSION}"
+                    echo "Host Port: ${env.HOST_PORT}"
+                    echo "Docker Image: ${env.IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage("Build Docker Image") {
+            steps {
+                powershell '''
+                    docker build -t "$env:IMAGE_TAG" .
+                '''
+            }
+        }
+
+        stage("Test Docker Image") {
+            steps {
+                powershell '''
+                    docker run --rm "$env:IMAGE_TAG" node --check server.js
+                '''
+            }
+        }
+
+        stage("Login to Docker Hub") {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "dockerhub-creds",
+                        usernameVariable: "DOCKER_USERNAME",
+                        passwordVariable: "DOCKER_PASSWORD"
+                    )
+                ]) {
+                    powershell '''
+                        $env:DOCKER_PASSWORD | docker login -u $env:DOCKER_USERNAME --password-stdin
                     '''
                 }
             }
         }
-        stage('Kubernetes Deploy') {
+
+        stage("Push Docker Image") {
             steps {
-                withCredentials([file(credentialsId: 'recommendation-kubeconfig', variable: 'KUBECONFIG')]) {
-                    bat '''
-                        @echo off
-                        "%KUBECTL%" apply -f k8s/v1.yaml
-                        if errorlevel 1 exit /b 1
-                        "%KUBECTL%" rollout status deployment/recommendation-v1 --timeout=120s
-                        if errorlevel 1 exit /b 1
-                        "%KUBECTL%" get deployment recommendation-v1
-                    '''
-                }
+                powershell '''
+                    docker push "$env:IMAGE_TAG"
+                '''
+            }
+        }
+
+        stage("Deploy Container") {
+            steps {
+                powershell '''
+                    $containerName = "recommendation-$env:VERSION"
+
+                    docker rm -f $containerName 2>$null
+
+                    docker run -d `
+                        --restart unless-stopped `
+                        --name $containerName `
+                        -p "$env:HOST_PORT`:3000" `
+                        "$env:IMAGE_TAG"
+                '''
             }
         }
     }
+
     post {
-        always {
-            bat '''
-                @echo off
-                if exist "%WORKSPACE%\\docker-auth" rmdir /s /q "%WORKSPACE%\\docker-auth"
-            '''
+        success {
+            echo "Recommendation System ${env.VERSION} deployed successfully on port ${env.HOST_PORT}"
+        }
+
+        failure {
+            echo "Jenkins pipeline failed."
         }
     }
 }
